@@ -5,891 +5,340 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>看護師勤務表作成アプリ</title>
     <style>
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-            color: #333;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        h1, h2, h3 {
-            color: #2c3e50;
-        }
-        
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-        
-        select, button, input {
-            padding: 8px 16px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            background: white;
-            font-size: 14px;
-        }
-        
-        button {
-            background: #3498db;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin-right: 5px;
-        }
-        
-        button:hover {
-            background: #2980b9;
-        }
-        
-        button.secondary {
-            background: #95a5a6;
-        }
-        
-        button.secondary:hover {
-            background: #7f8c8d;
-        }
-        
-        button.danger {
-            background: #e74c3c;
-        }
-        
-        button.danger:hover {
-            background: #c0392b;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px 12px;
-            text-align: center;
-        }
-        
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        
-        .weekend {
-            background-color: #f8f8f8;
-        }
-        
-        .sunday {
-            color: #e74c3c;
-        }
-        
-        .saturday {
-            color: #3498db;
-        }
-        
-        .shift-cell {
-            position: relative;
-            height: 60px;
-        }
-        
-        .shift-value {
-            font-size: 14px;
-            margin-top: 5px;
-        }
-        
-        .date-number {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            font-size: 12px;
-            color: #777;
-        }
-        
-        .shift-select {
-            width: 90%;
-            padding: 5px;
-        }
-        
-        .shift-request {
-            font-size: 11px;
-            color: #e67e22;
-            margin-top: 3px;
-        }
-        
-        .nurse-controls {
-            margin-bottom: 30px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-        }
-        
-        .nurse-form {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        
-        .nurse-list {
-            margin-top: 15px;
-        }
-        
-        .nurse-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-bottom: 5px;
-        }
-        
-        .tab-buttons {
-            display: flex;
-            margin-bottom: 15px;
-        }
-        
-        .tab-button {
-            padding: 10px 20px;
-            background: #ecf0f1;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px 5px 0 0;
-            margin-right: 5px;
-        }
-        
-        .tab-button.active {
-            background: #3498db;
-            color: white;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .summary-table {
-            margin-bottom: 30px;
-        }
-        
-        .summary-day {
-            font-weight: bold;
-        }
-        
-        .shift-count {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            padding: 8px;
-            background: #f8f8f8;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        .shift-members {
-            display: none;
-            padding: 10px;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-        
-        .shift-members.active {
-            display: block;
-        }
-        
-        .message {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 4px;
-            text-align: center;
-        }
-        
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        
-        .day-off-request {
-            background-color: #ffecb3;
-            font-weight: bold;
-        }
-        
-        .night-shift {
-            background-color: #d1c4e9;
-        }
-        
-        .after-night {
-            background-color: #bbdefb;
-        }
-        
-        .day-off {
-            background-color: #c8e6c9;
-        }
-        
-        .day-shift {
-            background-color: #ffccbc;
-        }
-        
-        @media print {
-            .controls, button, .nurse-controls, .tab-buttons, select, input {
-                display: none !important;
-            }
-            
-            .container {
-                box-shadow: none;
-                max-width: 100%;
-            }
-            
-            .tab-content {
-                display: block;
-                page-break-after: always;
-            }
-            
-            body {
-                background: none;
-                padding: 0;
-                margin: 0;
-            }
-        }
+        /* 基本スタイル (変更なし) */
+        body { font-family: sans-serif; line-height: 1.6; margin: 0; padding: 20px; background-color: #f4f4f4; color: #333; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; background-color: #fff; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 8px; }
+        h1, h2 { text-align: center; color: #333; }
+        .controls { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; align-items: center; }
+        .controls > div { display: flex; align-items: center; gap: 5px; }
+        label { font-weight: bold; margin-right: 5px; white-space: nowrap; }
+        select, input[type="text"], button { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        button { background-color: #007bff; color: white; cursor: pointer; transition: background-color 0.3s ease; border: none; }
+        button:hover { background-color: #0056b3; }
+        button.secondary { background-color: #6c757d; }
+        button.secondary:hover { background-color: #5a6268; }
+        button.danger { background-color: #dc3545; }
+        button.danger:hover { background-color: #c82333; }
+        .nurse-controls { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 4px; }
+        .nurse-form { display: flex; gap: 10px; align-items: center; }
+        #nurseList { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px; }
+        .nurse-item { background-color: #e9ecef; padding: 5px 10px; border-radius: 4px; display: flex; align-items: center; gap: 8px; }
+        .delete-nurse { background: none; border: none; color: #dc3545; cursor: pointer; font-size: 16px; padding: 0 5px; }
+        .tab-buttons { display: flex; margin-bottom: 20px; border-bottom: 2px solid #dee2e6; }
+        .tab-button { padding: 10px 20px; cursor: pointer; font-size: 16px; border: 1px solid #dee2e6; border-bottom: none; background-color: #f8f9fa; color: #495057; margin-right: 5px; border-radius: 4px 4px 0 0; transition: background-color 0.2s ease, border-color 0.2s ease; }
+        .tab-button:hover { background-color: #e9ecef; }
+        .tab-button.active { border-color: #dee2e6 #dee2e6 #fff; background-color: #fff; font-weight: bold; color: #007bff; position: relative; bottom: -1px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; border: 1px solid #dee2e6; border-top: none; padding: 20px; margin-top: -1px; background-color: #fff; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: fixed; }
+        th, td { border: 1px solid #ddd; padding: 6px; text-align: center; font-size: 12px; height: 40px; position: relative; overflow: hidden; white-space: nowrap; box-sizing: border-box;}
+        th { background-color: #f2f2f2; font-weight: bold; }
+        .saturday { color: #007bff; } .sunday { color: #dc3545; } .weekend { background-color: #f8f9fa; }
+        #scheduleTable td { vertical-align: top; height: 65px; }
+        .date-number { position: absolute; top: 2px; left: 4px; font-size: 10px; color: #666; }
+        .shift-select { width: calc(100% - 8px); margin-top: 18px; font-size: 11px; padding: 2px; border: 1px solid #eee; box-sizing: border-box; }
+        .day-off-request-label { font-size: 9px; color: #e83e8c; display: block; margin-top: 2px; font-weight: bold; }
+        .day-shift { background-color: #cce5ff; } .night-shift { background-color: #343a40; color: white; } .after-night { background-color: #ffc107; } .day-off { background-color: #f8d7da; } .paid-leave { background-color: #d4edda; }
+        .day-off-request { border: 2px dashed #e83e8c !important; }
+        .summary-table th:first-child, .summary-table td:first-child { width: 100px; text-align: left; padding-left: 10px; position: sticky; left: 0; background-color: #f2f2f2; z-index: 1; }
+        .summary-table tbody td:first-child { background-color: #fff; font-weight: bold; }
+        .summary-table th { min-width: 35px; }
+        .summary-table tbody tr:last-child td, .summary-table tbody tr:nth-last-child(2) td { font-weight: bold; background-color: #f2f2f2; }
+        .message { padding: 10px; margin-bottom: 15px; border-radius: 4px; text-align: center; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        #shiftCounts { margin-bottom: 15px; padding: 10px; background-color: #f9f9f9; border-radius: 4px; font-size: 14px; display: flex; flex-wrap: wrap; gap: 20px; }
+        #shiftCounts span { font-weight: bold; }
+        #fillBlanks { background-color: #2ecc71; margin-right: 5px; }
+        #fillBlanks:hover { background-color: #27ae60; }
+
+ /* --- 印刷用スタイル --- */
+@media print {
+    @page {
+        size: A4;
+        /* マージンを少しだけ減らしてみる */
+        margin: 12mm; /* 15mm -> 12mm */
+    }
+
+    body {
+        background-color: #fff; padding: 0; margin: 0;
+        /* 基本フォントサイズをさらに少し小さく */
+        font-size: 8.5pt; /* 9pt -> 8.5pt */
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+
+        /* --- 印刷サイズを120%に拡大 --- */
+        transform: scale(1.2);
+        transform-origin: top left;
+        /* --- 調整ここまで --- */
+
+        /* 拡大によりコンテンツがはみ出る可能性があるため、
+           必要に応じて幅やマージンを再調整してください */
+        width: calc(100% / 1.3); /* スケールに合わせて幅を調整 */
+    }
+    .container {
+        box-shadow: none; padding: 0; margin: 0; max-width: 100%; border-radius: 0;
+        width: 100%;
+    }
+    /* 印刷時に不要な要素を非表示 (変更なし) */
+    .controls, .nurse-controls, .tab-buttons, #message, button,
+    .tab-content > h2:not(.print-title) { display: none !important; }
+    .tab-content { display: none !important; border: none !important; padding: 0 !important; margin: 0 !important; }
+    .printable-area { display: block !important; width: 100%; }
+
+    /* 印刷用タイトル (変更なし) */
+    .print-title { text-align: center; font-size: 14pt; margin: 10mm 0 8mm 0; color: #000; }
+
+    /* テーブル共通スタイル (変更なし) */
+    table {
+        font-size: 8pt; margin-top: 5mm; page-break-inside: auto;
+        border-collapse: collapse !important; width: 100% !important;
+        table-layout: fixed !important; border-spacing: 0 !important;
+    }
+    tr { page-break-inside: avoid; page-break-after: auto; }
+
+    /* テーブルセル共通スタイル (th, td) */
+    .printable-area th,
+    .printable-area td {
+        /* --- さらに幅調整のためパディングとフォントサイズを縮小 --- */
+        padding: 1px; /* パディングを 2px -> 1px に */
+        font-size: 6.5pt; /* フォントサイズを 7pt -> 6.5pt に */
+        /* --- 調整ここまで --- */
+        background-color: #fff !important; color: #000 !important;
+        border: 1px solid #000 !important; box-sizing: border-box !important;
+        overflow: hidden !important; white-space: nowrap !important;
+        word-wrap: break-word; text-align: center; vertical-align: middle;
+    }
+
+    /* --- 個人勤務表の印刷スタイル調整 --- */
+    .printable-area #scheduleTable td {
+         height: auto; vertical-align: top;
+         /* 日付表示スペースをフォント縮小に合わせて調整 */
+         padding-top: 8px; /* 10px -> 8px */
+    }
+    .shift-select { display: none; }
+    .date-number {
+        position: absolute; top: 1px; left: 1px; /* 位置微調整 */
+        font-size: 6pt; /* 6.5pt -> 6pt */
+        color: #333;
+    }
+    .day-off-request-label {
+        font-size: 5.5pt; /* 6pt -> 5.5pt */
+        position: absolute; top: 8px; left: 1px; /* 位置微調整 */
+        color: #000 !important; font-weight: normal;
+    }
+    .print-shift-text {
+        display: block; text-align: center; font-weight: bold;
+        font-size: 7.5pt; /* 8pt -> 7.5pt */
+        margin-top: 10px; /* 12px -> 10px (位置微調整) */
+    }
+
+    /* --- まとめ表の印刷スタイル調整 --- */
+    .printable-area .summary-table th:first-child, /* 看護師名ヘッダー */
+    .printable-area .summary-table td:first-child { /* 看護師名セル */
+        position: static; background-color: #f2f2f2 !important;
+        /* --- さらに幅調整のため看護師名列の幅を縮小 --- */
+        width: 65px; /* 幅を 70px -> 65px に */
+        /* --- 調整ここまで --- */
+        font-size: 6.5pt; /* 他のセルと合わせる */
+        text-align: left; padding-left: 3px; /* パディング微調整 */
+        font-weight: bold;
+    }
+    .printable-area .summary-table tbody td:first-child {
+        background-color: #fff !important;
+    }
+     .printable-area .summary-table th { /* 日付ヘッダーセル */
+        /* --- さらに幅調整のため日付列の最小幅を縮小 --- */
+        min-width: 20px; /* 最小幅を 22px -> 20px に */
+        /* --- 調整ここまで --- */
+        font-weight: bold;
+     }
+    /* 合計行のスタイル (変更なし) */
+    .printable-area .summary-table tbody tr:last-child td,
+    .printable-area .summary-table tbody tr:nth-last-child(2) td {
+        background-color: #f2f2f2 !important; font-weight: bold;
+    }
+
+    /* --- 色や線の調整 (変更なし) --- */
+    .day-shift, .night-shift, .after-night, .day-off, .paid-leave, .weekend {
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .printable-area .day-shift { background-color: #cce5ff !important; }
+    .printable-area .night-shift { background-color: #343a40 !important; color: white !important; }
+    .printable-area .after-night { background-color: #ffc107 !important; }
+    .printable-area .day-off { background-color: #f8d7da !important; }
+    .printable-area .paid-leave { background-color: #d4edda !important; }
+    .printable-area .weekend { background-color: #f0f0f0 !important; }
+    .printable-area .day-off-request { border: 1px dashed #000 !important; }
+    .printable-area .sunday,
+    .printable-area .saturday { color: #000 !important; }
+
+}
+/* --- 印刷用スタイルここまで --- */
     </style>
 </head>
 <body>
     <div class="container">
         <h1>看護師勤務表作成アプリ</h1>
-        
         <div class="nurse-controls">
-            <h3>看護師の管理</h3>
             <div class="nurse-form">
-                <input type="text" id="nurseName" placeholder="看護師の名前">
+                <label for="nurseName">看護師名:</label>
+                <input type="text" id="nurseName" placeholder="名前を入力">
                 <button id="addNurse">追加</button>
             </div>
-            <div id="nurseList" class="nurse-list"></div>
+            <div id="nurseList"></div>
         </div>
-        
         <div class="tab-buttons">
             <button class="tab-button active" data-tab="individualSchedule">個人勤務表</button>
             <button class="tab-button" data-tab="summarySchedule">勤務まとめ</button>
         </div>
-        
-        <div id="individualSchedule" class="tab-content active">
+        <div class="tab-content active" id="individualSchedule">
+             <h2 style="margin-top: 0; margin-bottom: 15px; font-size: 1.2em;">個人勤務表</h2>
             <div class="controls">
+                <div><label for="selectedNurse">看護師：</label><select id="selectedNurse"></select></div>
+                <div><label for="yearMonth">年月：</label><select id="yearMonth"></select></div>
                 <div>
-                    <label for="selectedNurse">看護師：</label>
-                    <select id="selectedNurse"></select>
-                </div>
-                <div>
-                    <label for="yearMonth">年月：</label>
-                    <select id="yearMonth"></select>
-                </div>
-                <div>
+                    <button id="fillBlanks">未選択を日勤に</button>
                     <button id="requestDayOff">休み希望を入力</button>
                     <button id="saveSchedule">勤務表を保存</button>
-                    <button id="printSchedule" class="secondary">印刷</button>
+                    <button id="printIndividual" class="secondary">印刷</button>
                 </div>
             </div>
-            
             <div id="message" class="message" style="display: none;"></div>
-            
+            <div id="shiftCounts"></div>
             <div id="scheduleTable"></div>
         </div>
-        
-        <div id="summarySchedule" class="tab-content">
+        <div class="tab-content" id="summarySchedule">
+             <h2 style="margin-top: 0; margin-bottom: 15px; font-size: 1.2em;">勤務まとめ</h2>
             <div class="controls">
-                <div>
-                    <label for="summaryYearMonth">年月：</label>
-                    <select id="summaryYearMonth"></select>
-                </div>
+                <div><label for="summaryYearMonth">年月：</label><select id="summaryYearMonth"></select></div>
                 <div>
                     <button id="generateSummary">まとめを更新</button>
                     <button id="printSummary" class="secondary">印刷</button>
                 </div>
             </div>
-            
             <div id="summaryTable"></div>
         </div>
     </div>
 
     <script>
+        // グローバル変数 (変更なし)
+        const shiftTypes = ["", "日勤", "夜勤", "明け", "休み", "有給"];
+        const shiftClasses = { "日勤": "day-shift", "夜勤": "night-shift", "明け": "after-night", "休み": "day-off", "有給": "paid-leave" };
+        const shiftAbbreviations = { "日勤": "日", "夜勤": "夜", "明け": "明", "休み": "休", "有給": "有" };
+
+        // DOMContentLoaded イベントリスナー (変更なし)
         document.addEventListener('DOMContentLoaded', function() {
-            // 年月の選択肢を生成
-            const yearMonthSelects = document.querySelectorAll('#yearMonth, #summaryYearMonth');
-            const currentDate = new Date();
-            
-            yearMonthSelects.forEach(select => {
-                // 今月から12か月分の選択肢を作成
-                for (let i = 0; i < 12; i++) {
-                    const date = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 1);
-                    const year = date.getFullYear();
-                    const month = date.getMonth() + 1;
-                    const option = document.createElement('option');
-                    option.value = `${year}-${month.toString().padStart(2, '0')}`;
-                    option.textContent = `${year}年${month}月`;
-                    select.appendChild(option);
-                }
-            });
-            
-            // タブ切り替え
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    const tabId = this.getAttribute('data-tab');
-                    
-                    // すべてのタブとコンテンツを非アクティブに
-                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                    
-                    // クリックされたタブとそのコンテンツをアクティブに
-                    this.classList.add('active');
-                    document.getElementById(tabId).classList.add('active');
-                    
-                    // まとめタブなら自動的にまとめを生成
-                    if (tabId === 'summarySchedule') {
-                        generateSummaryTable();
-                    }
+            populateYearMonthSelect(document.getElementById('yearMonth'));
+            populateYearMonthSelect(document.getElementById('summaryYearMonth'));
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    button.classList.add('active');
+                    const targetTab = button.getAttribute('data-tab');
+                    document.getElementById(targetTab).classList.add('active');
+                    if (targetTab === 'summarySchedule') { generateSummaryTable(); }
                 });
             });
-            
-            // 看護師追加ボタンのイベント
             document.getElementById('addNurse').addEventListener('click', addNurse);
-            
-            // 保存ボタンのイベント
-            document.getElementById('saveSchedule').addEventListener('click', saveSchedule);
-            
-            // 印刷ボタンのイベント
-            document.getElementById('printSchedule').addEventListener('click', printSchedule);
-            document.getElementById('printSummary').addEventListener('click', printSchedule);
-            
-            // 休み希望入力ボタンのイベント
-            document.getElementById('requestDayOff').addEventListener('click', requestDayOff);
-            
-            // まとめ更新ボタンのイベント
-            document.getElementById('generateSummary').addEventListener('click', generateSummaryTable);
-            
-            // 看護師選択時にカレンダー再生成
             document.getElementById('selectedNurse').addEventListener('change', generateCalendar);
-            
-            // 年月変更時にカレンダー再生成
             document.getElementById('yearMonth').addEventListener('change', generateCalendar);
+            document.getElementById('saveSchedule').addEventListener('click', saveSchedule);
+            document.getElementById('requestDayOff').addEventListener('click', requestDayOff);
+            document.getElementById('fillBlanks').addEventListener('click', fillBlanksWithDayShift);
             document.getElementById('summaryYearMonth').addEventListener('change', generateSummaryTable);
-            
-            // 初期データ読み込み
+            document.getElementById('generateSummary').addEventListener('click', generateSummaryTable);
+            document.getElementById('printIndividual').addEventListener('click', printIndividualSchedule);
+            document.getElementById('printSummary').addEventListener('click', printSummarySchedule);
             loadNurses();
         });
-        
-        function loadNurses() {
-            let nurses = JSON.parse(localStorage.getItem('nurses')) || [];
-            updateNurseList(nurses);
-            updateNurseSelect(nurses);
-            
-            // 最初の看護師がいれば選択してカレンダー生成
-            if (nurses.length > 0) {
-                document.getElementById('selectedNurse').value = nurses[0];
-                generateCalendar();
-            }
-        }
-        
-        function addNurse() {
-            const nurseName = document.getElementById('nurseName').value.trim();
-            
-            if (!nurseName) {
-                showMessage('看護師の名前を入力してください', false);
-                return;
-            }
-            
-            let nurses = JSON.parse(localStorage.getItem('nurses')) || [];
-            
-            if (nurses.includes(nurseName)) {
-                showMessage('その名前はすでに登録されています', false);
-                return;
-            }
-            
-            nurses.push(nurseName);
-            localStorage.setItem('nurses', JSON.stringify(nurses));
-            
-            document.getElementById('nurseName').value = '';
-            showMessage('看護師を追加しました', true);
-            
-            updateNurseList(nurses);
-            updateNurseSelect(nurses);
-            
-            // 追加された看護師を選択してカレンダー生成
-            document.getElementById('selectedNurse').value = nurseName;
-            generateCalendar();
-        }
-        
-        function updateNurseList(nurses) {
-            const nurseList = document.getElementById('nurseList');
-            nurseList.innerHTML = '';
-            
-            nurses.forEach(nurse => {
-                const nurseItem = document.createElement('div');
-                nurseItem.className = 'nurse-item';
-                
-                const nurseName = document.createElement('span');
-                nurseName.textContent = nurse;
-                
-                const deleteButton = document.createElement('button');
-                deleteButton.className = 'danger';
-                deleteButton.textContent = '削除';
-                deleteButton.addEventListener('click', function() {
-                    removeNurse(nurse);
-                });
-                
-                nurseItem.appendChild(nurseName);
-                nurseItem.appendChild(deleteButton);
-                nurseList.appendChild(nurseItem);
-            });
-        }
-        
-        function updateNurseSelect(nurses) {
-            const selectedNurse = document.getElementById('selectedNurse');
-            selectedNurse.innerHTML = '';
-            
-            nurses.forEach(nurse => {
-                const option = document.createElement('option');
-                option.value = nurse;
-                option.textContent = nurse;
-                selectedNurse.appendChild(option);
-            });
-        }
-        
-        function removeNurse(nurseName) {
-            let nurses = JSON.parse(localStorage.getItem('nurses')) || [];
-            nurses = nurses.filter(nurse => nurse !== nurseName);
-            
-            localStorage.setItem('nurses', JSON.stringify(nurses));
-            showMessage('看護師を削除しました', true);
-            
-            updateNurseList(nurses);
-            updateNurseSelect(nurses);
-            
-            // 最初の看護師がいれば選択してカレンダー生成
-            if (nurses.length > 0) {
-                document.getElementById('selectedNurse').value = nurses[0];
-                generateCalendar();
-            } else {
-                // 看護師がいなければ空のカレンダー
-                document.getElementById('scheduleTable').innerHTML = '';
-            }
-        }
-        
-        function generateCalendar() {
-            const selectedNurse = document.getElementById('selectedNurse').value;
-            
-            if (!selectedNurse) {
-                document.getElementById('scheduleTable').innerHTML = '<p>看護師を選択してください</p>';
-                return;
-            }
-            
-            const yearMonth = document.getElementById('yearMonth').value;
-            const [year, month] = yearMonth.split('-').map(num => parseInt(num, 10));
-            
-            const firstDay = new Date(year, month - 1, 1);
-            const lastDay = new Date(year, month, 0);
-            const daysInMonth = lastDay.getDate();
-            
-            let tableHTML = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th colspan="7">${selectedNurse} - ${year}年${month}月 勤務表</th>
-                        </tr>
-                        <tr>
-                            <th>日</th>
-                            <th>月</th>
-                            <th>火</th>
-                            <th>水</th>
-                            <th>木</th>
-                            <th>金</th>
-                            <th>土</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            let dayCount = 1;
-            const startDayOfWeek = firstDay.getDay();
-            
-            for (let i = 0; i < 6; i++) {
-                if (dayCount > daysInMonth) break;
-                
-                tableHTML += '<tr>';
-                
-                for (let j = 0; j < 7; j++) {
-                    if ((i === 0 && j < startDayOfWeek) || dayCount > daysInMonth) {
-                        tableHTML += '<td></td>';
-                    } else {
-                        const dayClass = j === 0 ? 'sunday' : j === 6 ? 'saturday' : '';
-                        const weekendClass = (j === 0 || j === 6) ? 'weekend' : '';
-                        
-                        // 日付データ
-                        const dateStr = `${year}-${month.toString().padStart(2, '0')}-${dayCount.toString().padStart(2, '0')}`;
-                        
-                        // 保存済みのシフトと休み希望を取得
-                        const savedShift = getSavedShift(selectedNurse, dateStr);
-                        const dayOffRequest = getDayOffRequest(selectedNurse, dateStr);
-                        
-                        let cellClass = 'shift-cell ' + dayClass + ' ' + weekendClass;
-                        if (dayOffRequest) {
-                            cellClass += ' day-off-request';
-                        }
-                        
-                        // シフトによるセルの背景色クラス
-                        if (savedShift === '夜勤') {
-                            cellClass += ' night-shift';
-                        } else if (savedShift === '明け') {
-                            cellClass += ' after-night';
-                        } else if (savedShift === '休み') {
-                            cellClass += ' day-off';
-                        } else if (savedShift === '日勤') {
-                            cellClass += ' day-shift';
-                        }
-                        
-                        tableHTML += `
-                            <td class="${cellClass}">
-                                <div class="date-number">${dayCount}</div>
-                                <div class="shift-input-container">
-                                    <select class="shift-select" data-date="${dateStr}" onchange="handleShiftChange(this)">
-                                        <option value="" ${!savedShift ? 'selected' : ''}>選択</option>
-                                        <option value="日勤" ${savedShift === '日勤' ? 'selected' : ''}>日勤</option>
-                                        <option value="夜勤" ${savedShift === '夜勤' ? 'selected' : ''}>夜勤</option>
-                                        <option value="明け" ${savedShift === '明け' ? 'selected' : ''}>明け</option>
-                                        <option value="休み" ${savedShift === '休み' ? 'selected' : ''}>休み</option>
-                                        <option value="有給" ${savedShift === '有給' ? 'selected' : ''}>有給</option>
-                                    </select>
-                                    ${dayOffRequest ? '<div class="shift-request">休み希望</div>' : ''}
-                                </div>
-                            </td>
-                        `;
-                        
-                        dayCount++;
-                    }
-                }
-                
-                tableHTML += '</tr>';
-            }
-            
-            tableHTML += `
-                    </tbody>
-                </table>
-            `;
-            
-            document.getElementById('scheduleTable').innerHTML = tableHTML;
-        }
-        
-        function handleShiftChange(selectElement) {
+
+        // --- 年月選択肢を生成 --- (変更なし)
+        function populateYearMonthSelect(selectElement) { const now = new Date(); let currentYear = now.getFullYear(); let currentMonth = now.getMonth() + 1; for (let i = 0; i < 12; i++) { const option = document.createElement('option'); const year = currentYear + Math.floor((currentMonth + i - 1) / 12); const month = (currentMonth + i - 1) % 12 + 1; option.value = `${year}-${String(month).padStart(2, '0')}`; option.textContent = `${year}年${month}月`; selectElement.appendChild(option); } selectElement.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`; }
+
+        // --- 看護師管理 --- (変更なし)
+        function loadNurses() { let nurses = JSON.parse(localStorage.getItem('nurses')) || []; updateNurseList(nurses); updateNurseSelect(nurses); const countsDiv = document.getElementById('shiftCounts'); if (nurses.length > 0) { const lastSelected = localStorage.getItem('lastSelectedNurse'); document.getElementById('selectedNurse').value = (lastSelected && nurses.includes(lastSelected)) ? lastSelected : nurses[0]; generateCalendar(); } else { document.getElementById('scheduleTable').innerHTML = '<p>看護師を追加してください</p>'; if (countsDiv) countsDiv.innerHTML = ''; } }
+        function addNurse() { const nurseNameInput = document.getElementById('nurseName'); const nurseName = nurseNameInput.value.trim(); let nurses = JSON.parse(localStorage.getItem('nurses')) || []; if (!nurseName) { showMessage('看護師名を入力してください', false); return; } if (nurses.includes(nurseName)) { showMessage('同じ名前の看護師が既に存在します', false); return; } nurses.push(nurseName); localStorage.setItem('nurses', JSON.stringify(nurses)); nurseNameInput.value = ''; showMessage(`${nurseName}さんを追加しました`, true); updateNurseList(nurses); updateNurseSelect(nurses); document.getElementById('selectedNurse').value = nurseName; localStorage.setItem('lastSelectedNurse', nurseName); generateCalendar(); }
+        function updateNurseList(nurses) { const listDiv = document.getElementById('nurseList'); listDiv.innerHTML = ''; nurses.forEach(nurse => { const itemDiv = document.createElement('div'); itemDiv.classList.add('nurse-item'); itemDiv.textContent = nurse; const deleteButton = document.createElement('button'); deleteButton.classList.add('delete-nurse'); deleteButton.innerHTML = '&times;'; deleteButton.title = `${nurse}さんを削除`; deleteButton.onclick = () => removeNurse(nurse); itemDiv.appendChild(deleteButton); listDiv.appendChild(itemDiv); }); }
+        function updateNurseSelect(nurses) { const select = document.getElementById('selectedNurse'); const currentVal = select.value; select.innerHTML = ''; if (nurses.length === 0) { const option = document.createElement('option'); option.value = ""; option.textContent = "看護師がいません"; select.appendChild(option); } else { nurses.forEach(nurse => { const option = document.createElement('option'); option.value = nurse; option.textContent = nurse; select.appendChild(option); }); if (nurses.includes(currentVal)) { select.value = currentVal; } else if (nurses.length > 0) { select.value = nurses[0]; } } }
+        function removeNurse(nurseName) { if (!confirm(`${nurseName}さんをリストから削除しますか？関連する勤務データも削除されます。`)) { return; } let nurses = JSON.parse(localStorage.getItem('nurses')) || []; nurses = nurses.filter(n => n !== nurseName); localStorage.setItem('nurses', JSON.stringify(nurses)); let scheduleData = JSON.parse(localStorage.getItem('nurseSchedules')) || {}; delete scheduleData[nurseName]; localStorage.setItem('nurseSchedules', JSON.stringify(scheduleData)); let requestData = JSON.parse(localStorage.getItem('dayOffRequests')) || {}; delete requestData[nurseName]; localStorage.setItem('dayOffRequests', JSON.stringify(requestData)); if (localStorage.getItem('lastSelectedNurse') === nurseName) { localStorage.removeItem('lastSelectedNurse'); } showMessage(`${nurseName}さんを削除しました`, true); loadNurses(); }
+
+        // --- 個人勤務表 --- (変更なし)
+        function generateCalendar() { const selectedNurse = document.getElementById('selectedNurse').value; const yearMonth = document.getElementById('yearMonth').value; const scheduleTableDiv = document.getElementById('scheduleTable'); const countsDiv = document.getElementById('shiftCounts'); if(selectedNurse) { localStorage.setItem('lastSelectedNurse', selectedNurse); } if (!selectedNurse || !yearMonth) { scheduleTableDiv.innerHTML = '<p>看護師と年月を選択してください</p>'; if (countsDiv) countsDiv.innerHTML = ''; return; } const [year, month] = yearMonth.split('-').map(num => parseInt(num, 10)); const daysInMonth = new Date(year, month, 0).getDate(); const firstDayOfMonth = new Date(year, month - 1, 1).getDay(); const scheduleData = JSON.parse(localStorage.getItem('nurseSchedules')) || {}; const nurseSchedule = scheduleData[selectedNurse] || {}; const requestData = JSON.parse(localStorage.getItem('dayOffRequests')) || {}; const nurseRequests = requestData[selectedNurse] || []; let tableHTML = `<table class="individual-schedule-table"><thead><tr><th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th></tr></thead><tbody><tr>`; for (let i = 0; i < firstDayOfMonth; i++) tableHTML += '<td></td>'; for (let day = 1; day <= daysInMonth; day++) { const currentDate = new Date(year, month - 1, day); const dayOfWeek = currentDate.getDay(); const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`; let dayClass = ''; if (dayOfWeek === 0) dayClass = 'sunday'; if (dayOfWeek === 6) dayClass = 'saturday'; if (dayOfWeek === 0 || dayOfWeek === 6) dayClass += ' weekend'; const savedShift = nurseSchedule[dateStr] || ""; const isRequestedOff = nurseRequests.includes(dateStr); let cellClass = shiftClasses[savedShift] || ''; if (isRequestedOff) cellClass += ' day-off-request'; cellClass += ` ${dayClass}`; tableHTML += `<td class="${cellClass.trim()}"><span class="date-number">${day}</span>`; if (isRequestedOff) { tableHTML += `<span class="day-off-request-label">休み希望</span>`; } tableHTML += `<select class="shift-select" data-date="${dateStr}" onchange="handleShiftChange(this)">`; shiftTypes.forEach(shift => { const selected = (shift === savedShift) ? 'selected' : ''; const displayText = shift === "" ? "選択" : shift; tableHTML += `<option value="${shift}" ${selected}>${displayText}</option>`; }); tableHTML += `</select></td>`; if (dayOfWeek === 6) tableHTML += '</tr><tr>'; } const lastDayOfMonth = new Date(year, month - 1, daysInMonth).getDay(); if (lastDayOfMonth !== 6) { for (let i = lastDayOfMonth; i < 6; i++) tableHTML += '<td></td>'; } tableHTML += '</tr></tbody></table>'; scheduleTableDiv.innerHTML = tableHTML; updateShiftCounts(selectedNurse, year, month); }
+        function handleShiftChange(selectElement) { const selectedNurse = document.getElementById('selectedNurse').value; const yearMonth = document.getElementById('yearMonth').value; const [year, month] = yearMonth.split('-').map(num => parseInt(num, 10)); const dateStr = selectElement.getAttribute('data-date'); const selectedShift = selectElement.value; const cell = selectElement.closest('td'); let scheduleData = JSON.parse(localStorage.getItem('nurseSchedules')) || {}; if (!scheduleData[selectedNurse]) scheduleData[selectedNurse] = {}; Object.values(shiftClasses).forEach(cls => cell.classList.remove(cls)); if (selectedShift) { scheduleData[selectedNurse][dateStr] = selectedShift; if (shiftClasses[selectedShift]) { cell.classList.add(shiftClasses[selectedShift]); } } else { delete scheduleData[selectedNurse][dateStr]; } if (selectedShift === '夜勤') { const currentDate = new Date(dateStr); const nextDay = new Date(currentDate); nextDay.setDate(currentDate.getDate() + 1); const dayAfterNext = new Date(currentDate); dayAfterNext.setDate(currentDate.getDate() + 2); if (nextDay.getMonth() + 1 === month) { const nextDateStr = `${year}-${String(month).padStart(2, '0')}-${String(nextDay.getDate()).padStart(2, '0')}`; scheduleData[selectedNurse][nextDateStr] = '明け'; const nextSelect = document.querySelector(`.shift-select[data-date="${nextDateStr}"]`); if (nextSelect) { nextSelect.value = '明け'; const nextCell = nextSelect.closest('td'); Object.values(shiftClasses).forEach(cls => nextCell.classList.remove(cls)); nextCell.classList.add(shiftClasses['明け']); } } if (dayAfterNext.getMonth() + 1 === month) { const dayAfterNextStr = `${year}-${String(month).padStart(2, '0')}-${String(dayAfterNext.getDate()).padStart(2, '0')}`; scheduleData[selectedNurse][dayAfterNextStr] = '休み'; const afterNextSelect = document.querySelector(`.shift-select[data-date="${dayAfterNextStr}"]`); if (afterNextSelect) { afterNextSelect.value = '休み'; const afterNextCell = afterNextSelect.closest('td'); Object.values(shiftClasses).forEach(cls => afterNextCell.classList.remove(cls)); afterNextCell.classList.add(shiftClasses['休み']); } } } localStorage.setItem('nurseSchedules', JSON.stringify(scheduleData)); updateShiftCounts(selectedNurse, year, month); }
+        function requestDayOff() { const selectedNurse = document.getElementById('selectedNurse').value; if (!selectedNurse) { showMessage('看護師を選択してください', false); return; } const yearMonth = document.getElementById('yearMonth').value; const [year, month] = yearMonth.split('-').map(num => parseInt(num, 10)); const daysInMonth = new Date(year, month, 0).getDate(); const requestData = JSON.parse(localStorage.getItem('dayOffRequests')) || {}; const nurseRequests = requestData[selectedNurse] || []; const currentDays = nurseRequests.filter(dateStr => dateStr.startsWith(`${year}-${String(month).padStart(2, '0')}`)).map(dateStr => parseInt(dateStr.split('-')[2], 10)).sort((a, b) => a - b).join(','); const inputDays = prompt(`${year}年${month}月の休み希望日をカンマ区切りで入力してください (例: 5,12,20)\n現在の希望: ${currentDays}`, currentDays); if (inputDays === null) return; if (!requestData[selectedNurse]) requestData[selectedNurse] = []; requestData[selectedNurse] = requestData[selectedNurse].filter(dateStr => !dateStr.startsWith(`${year}-${String(month).padStart(2, '0')}`)); const days = inputDays.split(',').map(d => parseInt(d.trim(), 10)).filter(d => !isNaN(d) && d >= 1 && d <= daysInMonth); days.forEach(day => { const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`; if (!requestData[selectedNurse].includes(dateStr)) { requestData[selectedNurse].push(dateStr); } }); localStorage.setItem('dayOffRequests', JSON.stringify(requestData)); showMessage('休み希望日を保存しました', true); generateCalendar(); }
+        function saveSchedule() { const selectedNurse = document.getElementById('selectedNurse').value; if (!selectedNurse) { showMessage('看護師を選択してください', false); return; } const yearMonth = document.getElementById('yearMonth').value; const [year, month] = yearMonth.split('-').map(num => parseInt(num, 10)); let scheduleData = JSON.parse(localStorage.getItem('nurseSchedules')) || {}; if (!scheduleData[selectedNurse]) scheduleData[selectedNurse] = {}; document.querySelectorAll('#scheduleTable .shift-select').forEach(select => { const dateStr = select.getAttribute('data-date'); const shift = select.value; if (shift) { scheduleData[selectedNurse][dateStr] = shift; } else { delete scheduleData[selectedNurse][dateStr]; } }); localStorage.setItem('nurseSchedules', JSON.stringify(scheduleData)); showMessage('勤務表を保存しました', true); updateShiftCounts(selectedNurse, year, month); }
+        function updateShiftCounts(nurseName, year, month) { const scheduleData = JSON.parse(localStorage.getItem('nurseSchedules')) || {}; const nurseSchedule = scheduleData[nurseName] || {}; const daysInMonth = new Date(year, month, 0).getDate(); let counts = {}; shiftTypes.forEach(type => { if(type) counts[type] = 0; }); for (let day = 1; day <= daysInMonth; day++) { const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`; const shift = nurseSchedule[dateStr]; if (shift && counts.hasOwnProperty(shift)) { counts[shift]++; } } const countsDiv = document.getElementById('shiftCounts'); if (countsDiv) { countsDiv.innerHTML = `<span>日勤: ${counts['日勤'] || 0}日</span> <span>夜勤: ${counts['夜勤'] || 0}日</span> <span>休み: ${counts['休み'] || 0}日</span> <span>明け: ${counts['明け'] || 0}日</span> <span>有給: ${counts['有給'] || 0}日</span>`; } }
+        function fillBlanksWithDayShift() { const selectedNurse = document.getElementById('selectedNurse').value; const yearMonth = document.getElementById('yearMonth').value; const [year, month] = yearMonth.split('-').map(num => parseInt(num, 10)); if (!selectedNurse) { showMessage('看護師を選択してください', false); return; } let scheduleData = JSON.parse(localStorage.getItem('nurseSchedules')) || {}; if (!scheduleData[selectedNurse]) scheduleData[selectedNurse] = {}; let changed = false; document.querySelectorAll('#scheduleTable .shift-select').forEach(select => { if (select.value === "") { const dateStr = select.getAttribute('data-date'); select.value = '日勤'; const cell = select.closest('td'); Object.values(shiftClasses).forEach(cls => cell.classList.remove(cls)); cell.classList.add(shiftClasses['日勤']); scheduleData[selectedNurse][dateStr] = '日勤'; changed = true; } }); if (changed) { localStorage.setItem('nurseSchedules', JSON.stringify(scheduleData)); showMessage('未選択の日を日勤に設定しました', true); updateShiftCounts(selectedNurse, year, month); } else { showMessage('未選択の日がありませんでした', false); } }
+
+        // --- 勤務まとめ --- (変更なし)
+        function generateSummaryTable() { const yearMonth = document.getElementById('summaryYearMonth').value; const [year, month] = yearMonth.split('-').map(num => parseInt(num, 10)); const nurses = JSON.parse(localStorage.getItem('nurses')) || []; const scheduleData = JSON.parse(localStorage.getItem('nurseSchedules')) || {}; const summaryTableDiv = document.getElementById('summaryTable'); if (nurses.length === 0) { summaryTableDiv.innerHTML = '<p>看護師が登録されていません</p>'; return; } const daysInMonth = new Date(year, month, 0).getDate(); let summaryHTML = `<table class="summary-table"><thead><tr><th>看護師</th>`; for (let day = 1; day <= daysInMonth; day++) { const date = new Date(year, month - 1, day); const dayOfWeek = date.getDay(); let dayClass = ''; if (dayOfWeek === 0) dayClass = 'sunday'; if (dayOfWeek === 6) dayClass = 'saturday'; summaryHTML += `<th class="${dayClass}">${day}</th>`; } summaryHTML += `</tr></thead><tbody>`; nurses.forEach(nurse => { summaryHTML += `<tr><td>${nurse}</td>`; for (let day = 1; day <= daysInMonth; day++) { const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`; const shift = (scheduleData[nurse] && scheduleData[nurse][dateStr]) || ''; const displayShift = shiftAbbreviations[shift] || shift; let cellClass = shiftClasses[shift] || ''; const dow = new Date(year, month - 1, day).getDay(); if (dow === 0) cellClass += ' sunday'; if (dow === 6) cellClass += ' saturday'; summaryHTML += `<td class="${cellClass.trim()}">${displayShift}</td>`; } summaryHTML += '</tr>'; }); summaryHTML += `<tr><td>夜勤合計</td>`; for (let day = 1; day <= daysInMonth; day++) { let nightShiftCount = 0; nurses.forEach(nurse => { const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`; if ((scheduleData[nurse] && scheduleData[nurse][dateStr]) === '夜勤') { nightShiftCount++; } }); const dow = new Date(year, month - 1, day).getDay(); let dayClass = ''; if (dow === 0) dayClass = 'sunday'; if (dow === 6) dayClass = 'saturday'; summaryHTML += `<td class="${dayClass}">${nightShiftCount > 0 ? nightShiftCount : ''}</td>`; } summaryHTML += '</tr>'; summaryHTML += `<tr><td>日勤合計</td>`; for (let day = 1; day <= daysInMonth; day++) { let dayShiftCount = 0; nurses.forEach(nurse => { const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`; if ((scheduleData[nurse] && scheduleData[nurse][dateStr]) === '日勤') { dayShiftCount++; } }); const dow = new Date(year, month - 1, day).getDay(); let dayClass = ''; if (dow === 0) dayClass = 'sunday'; if (dow === 6) dayClass = 'saturday'; summaryHTML += `<td class="${dayClass}">${dayShiftCount > 0 ? dayShiftCount : ''}</td>`; } summaryHTML += '</tr>'; summaryHTML += `</tbody></table>`; summaryTableDiv.innerHTML = summaryHTML; }
+
+        // --- ユーティリティ ---
+
+        // --- 印刷関数 ---
+        function printIndividualSchedule() {
+            const targetElement = document.getElementById('individualSchedule');
+            if (!targetElement) return;
+
+            // --- 印刷タイトルを追加 ---
             const selectedNurse = document.getElementById('selectedNurse').value;
             const yearMonth = document.getElementById('yearMonth').value;
             const [year, month] = yearMonth.split('-').map(num => parseInt(num, 10));
-            const dateStr = selectElement.getAttribute('data-date');
-            const selectedShift = selectElement.value;
-            
-            if (selectedShift === '夜勤') {
-                // 夜勤が選択された場合、翌日を明け、翌々日を休みに自動設定
-                const currentDate = new Date(dateStr);
-                
-                // 翌日の日付
-                const nextDay = new Date(currentDate);
-                nextDay.setDate(currentDate.getDate() + 1);
-                const nextDateStr = `${nextDay.getFullYear()}-${(nextDay.getMonth() + 1).toString().padStart(2, '0')}-${nextDay.getDate().toString().padStart(2, '0')}`;
-                
-                // 翌々日の日付
-                const afterNextDay = new Date(currentDate);
-                afterNextDay.setDate(currentDate.getDate() + 2);
-                const afterNextDateStr = `${afterNextDay.getFullYear()}-${(afterNextDay.getMonth() + 1).toString().padStart(2, '0')}-${afterNextDay.getDate().toString().padStart(2, '0')}`;
-                
-                // 同じ月内の場合のみ、セレクト要素を変更
-                if (nextDay.getMonth() + 1 === parseInt(month)) {
-                    const nextDaySelect = document.querySelector(`.shift-select[data-date="${nextDateStr}"]`);
-                    if (nextDaySelect) {
-                        nextDaySelect.value = '明け';
-                        
-                        // 明けのセルにクラスを追加
-                        const nextDayCell = nextDaySelect.closest('td');
-                        nextDayCell.classList.add('after-night');
-                        
-                        // 必要に応じて他のクラスを削除
-                        nextDayCell.classList.remove('night-shift', 'day-off', 'day-shift');
-                    }
-                }
-                
-                if (afterNextDay.getMonth() + 1 === parseInt(month)) {
-                    const afterNextDaySelect = document.querySelector(`.shift-select[data-date="${afterNextDateStr}"]`);
-                    if (afterNextDaySelect) {
-                        afterNextDaySelect.value = '休み';
-                        
-                        // 休みのセルにクラスを追加
-                        const afterNextDayCell = afterNextDaySelect.closest('td');
-                        afterNextDayCell.classList.add('day-off');
-                        
-                        // 必要に応じて他のクラスを削除
-                        afterNextDayCell.classList.remove('night-shift', 'after-night', 'day-shift');
-                    }
-                }
-                
-                // 現在のセルに夜勤クラスを追加
-                const currentCell = selectElement.closest('td');
-                currentCell.classList.add('night-shift');
-                currentCell.classList.remove('after-night', 'day-off', 'day-shift');
-                
-                // 自動設定されたシフトをデータに保存
-                let scheduleData = JSON.parse(localStorage.getItem('nurseSchedules')) || {};
-                
-                if (!scheduleData[selectedNurse]) {
-                    scheduleData[selectedNurse] = {};
-                }
-                
-                scheduleData[selectedNurse][dateStr] = '夜勤';
-                
-                if (nextDay.getMonth() + 1 === parseInt(month)) {
-                    scheduleData[selectedNurse][nextDateStr] = '明け';
-                }
-                
-                if (afterNextDay.getMonth() + 1 === parseInt(month)) {
-                    scheduleData[selectedNurse][afterNextDateStr] = '休み';
-                }
-                
-                localStorage.setItem('nurseSchedules', JSON.stringify(scheduleData));
-            } else {
-                // 現在のセルのクラスを更新
-                const currentCell = selectElement.closest('td');
-                currentCell.classList.remove('night-shift', 'after-night', 'day-off', 'day-shift');
-                
-                if (selectedShift === '日勤') {
-                    currentCell.classList.add('day-shift');
-                } else if (selectedShift === '明け') {
-                    currentCell.classList.add('after-night');
-                } else if (selectedShift === '休み') {
-                    currentCell.classList.add('day-off');
-                }
-                
-                // 選択されたシフトをデータに保存
-                let scheduleData = JSON.parse(localStorage.getItem('nurseSchedules')) || {};
-                
-                if (!scheduleData[selectedNurse]) {
-                    scheduleData[selectedNurse] = {};
-                }
-                
-                if (selectedShift) {
-                    scheduleData[selectedNurse][dateStr] = selectedShift;
-                } else {
-                    delete scheduleData[selectedNurse][dateStr];
-                }
-                
-                localStorage.setItem('nurseSchedules', JSON.stringify(scheduleData));
-            }
+            const printTitle = document.createElement('h2');
+            printTitle.classList.add('print-title'); // CSSでスタイル指定用
+            printTitle.textContent = `${year}年${month}月 ${selectedNurse}さんの勤務表`;
+            targetElement.prepend(printTitle); // 要素の先頭に追加
+            // --- タイトル追加ここまで ---
+
+            const shiftSelects = targetElement.querySelectorAll('#scheduleTable .shift-select');
+            shiftSelects.forEach(select => { const shiftValue = select.value; if (shiftValue) { const abbreviation = shiftAbbreviations[shiftValue] || shiftValue; const printSpan = document.createElement('span'); printSpan.classList.add('print-shift-text'); printSpan.textContent = abbreviation; select.parentNode.appendChild(printSpan); } });
+
+            targetElement.classList.add('printable-area');
+            window.print();
+
+            setTimeout(() => {
+                targetElement.classList.remove('printable-area');
+                const addedSpans = targetElement.querySelectorAll('.print-shift-text');
+                addedSpans.forEach(span => span.remove());
+                // --- 追加したタイトルも削除 ---
+                const addedTitle = targetElement.querySelector('.print-title');
+                if(addedTitle) addedTitle.remove();
+                // --- タイトル削除ここまで ---
+            }, 500);
         }
-        
-        function getSavedShift(nurseName, dateStr) {
-            const scheduleData = JSON.parse(localStorage.getItem('nurseSchedules')) || {};
-            
-            if (scheduleData[nurseName] && scheduleData[nurseName][dateStr]) {
-                return scheduleData[nurseName][dateStr];
-            }
-            
-            return null;
-        }
-        
-        function getDayOffRequest(nurseName, dateStr) {
-            const requestData = JSON.parse(localStorage.getItem('dayOffRequests')) || {};
-            
-            if (requestData[nurseName] && requestData[nurseName].includes(dateStr)) {
-                return true;
-            }
-            
-            return false;
-        }
-        
-        function requestDayOff() {
-            const selectedNurse = document.getElementById('selectedNurse').value;
-            
-            if (!selectedNurse) {
-                showMessage('看護師を選択してください', false);
-                return;
-            }
-            
-            const yearMonth = document.getElementById('yearMonth').value;
-            const [year, month] = yearMonth.split('-').map(num => parseInt(num, 10));
-            
-            const day = prompt(`${year}年${month}月の休み希望日を入力してください（例: 10,15,20）:`);
-            
-            if (day === null) return; // キャンセル時
-            
-            const days = day.split(',').map(d => d.trim()).filter(d => {
-                const num = parseInt(d, 10);
-                return !isNaN(num) && num > 0 && num <= new Date(year, month, 0).getDate();
-            });
-            
-            if (days.length === 0) {
-                showMessage('有効な日付を入力してください', false);
-                return;
-            }
-            
-            let requestData = JSON.parse(localStorage.getItem('dayOffRequests')) || {};
-            
-            if (!requestData[selectedNurse]) {
-                requestData[selectedNurse] = [];
-            }
-            
-            days.forEach(d => {
-                const dateStr = `${year}-${month.toString().padStart(2, '0')}-${parseInt(d).toString().padStart(2, '0')}`;
-                
-                if (!requestData[selectedNurse].includes(dateStr)) {
-                    requestData[selectedNurse].push(dateStr);
-                }
-            });
-            
-            localStorage.setItem('dayOffRequests', JSON.stringify(requestData));
-            showMessage('休み希望日を保存しました', true);
-            
-            // カレンダーを再生成して休み希望を表示
-            generateCalendar();
-        }
-        
-        function saveSchedule() {
-            const selectedNurse = document.getElementById('selectedNurse').value;
-            
-            if (!selectedNurse) {
-                showMessage('看護師を選択してください', false);
-                return;
-            }
-            
-            // 各日付のシフト情報を収集
-            let scheduleData = JSON.parse(localStorage.getItem('nurseSchedules')) || {};
-            
-            if (!scheduleData[selectedNurse]) {
-                scheduleData[selectedNurse] = {};
-            }
-            
-            document.querySelectorAll('.shift-select').forEach(select => {
-                const dateStr = select.getAttribute('data-date');
-                const shiftValue = select.value;
-                
-                if (shiftValue) {
-                    scheduleData[selectedNurse][dateStr] = shiftValue;
-                } else {
-                    delete scheduleData[selectedNurse][dateStr];
-                }
-            });
-            
-            localStorage.setItem('nurseSchedules', JSON.stringify(scheduleData));
-            showMessage('勤務表を保存しました', true);
-        }
-        
-        function generateSummaryTable() {
+
+        function printSummarySchedule() {
+            const targetElement = document.getElementById('summarySchedule');
+            if (!targetElement) return;
+
+             // --- 印刷タイトルを追加 ---
             const yearMonth = document.getElementById('summaryYearMonth').value;
             const [year, month] = yearMonth.split('-').map(num => parseInt(num, 10));
-            
-            const nurses = JSON.parse(localStorage.getItem('nurses')) || [];
-            const scheduleData = JSON.parse(localStorage.getItem('nurseSchedules')) || {};
-            
-            if (nurses.length === 0) {
-                document.getElementById('summaryTable').innerHTML = '<p>看護師が登録されていません</p>';
-                return;
-            }
-            
-            const daysInMonth = new Date(year, month, 0).getDate();
-            
-            // 月間全体まとめ表
-            let summaryHTML = `
-                <h2>${year}年${month}月 勤務まとめ</h2>
-                <table class="summary-table">
-                    <thead>
-                        <tr>
-                            <th>看護師</th>
-            `;
-            
-            // 日付ヘッダー
-            for (let day = 1; day <= daysInMonth; day++) {
-                const date = new Date(year, month - 1, day);
-                const dayOfWeek = date.getDay();
-                let dayClass = '';
-                
-                if (dayOfWeek === 0) dayClass = 'sunday';
-                if (dayOfWeek === 6) dayClass = 'saturday';
-            summaryHTML += `<th class="${dayClass}">${day}</th>`;  // 日付ヘッダー :contentReference[oaicite:0]{index=0}&#8203;:contentReference[oaicite:1]{index=1}
-            }
+            const printTitle = document.createElement('h2');
+            printTitle.classList.add('print-title'); // CSSでスタイル指定用
+            printTitle.textContent = `${year}年${month}月 勤務まとめ`;
+            targetElement.prepend(printTitle); // 要素の先頭に追加
+            // --- タイトル追加ここまで ---
 
-            // ヘッダー行閉じ、ボディ開始
-            summaryHTML += `
-                    </tr>
-                </thead>
-                <tbody>
-            `;
-
-            // 看護師ごとの行を生成
-            nurses.forEach(nurse => {
-                summaryHTML += `<tr><td>${nurse}</td>`;
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-                    const shift = (scheduleData[nurse] && scheduleData[nurse][dateStr]) || '';
-                    let cellClass = '';
-
-                    // シフトごとの背景色クラス
-                    if (shift === '夜勤') cellClass = 'night-shift';
-                    else if (shift === '明け') cellClass = 'after-night';
-                    else if (shift === '休み') cellClass = 'day-off';
-                    else if (shift === '日勤') cellClass = 'day-shift';
-
-                    // 土日の文字色クラス
-                    const dow = new Date(year, month - 1, day).getDay();
-                    if (dow === 0) cellClass += ' sunday';
-                    if (dow === 6) cellClass += ' saturday';
-
-                    summaryHTML += `<td class="${cellClass}">${shift}</td>`;
-                }
-                summaryHTML += '</tr>';
-            });
-
-            summaryHTML += `
-                </tbody>
-            </table>
-            `;
-
-            // まとめ表を描画
-            document.getElementById('summaryTable').innerHTML = summaryHTML;
-        }
-
-        // 印刷ボタン共通関数
-        function printSchedule() {
+            targetElement.classList.add('printable-area');
             window.print();
-        }
 
-        // メッセージ表示（成功／エラー）
-        function showMessage(text, isSuccess) {
-            const msg = document.getElementById('message');
-            msg.textContent = text;
-            msg.className = 'message ' + (isSuccess ? 'success' : 'error');
-            msg.style.display = 'block';
-            setTimeout(() => { msg.style.display = 'none'; }, 3000);
+            setTimeout(() => {
+                targetElement.classList.remove('printable-area');
+                 // --- 追加したタイトルも削除 ---
+                const addedTitle = targetElement.querySelector('.print-title');
+                if(addedTitle) addedTitle.remove();
+                // --- タイトル削除ここまで ---
+            }, 500);
         }
+        // --- 印刷関数ここまで ---
+
+        // --- メッセージ表示 --- (変更なし)
+        function showMessage(text, isSuccess) { const messageDiv = document.getElementById('message'); messageDiv.textContent = text; messageDiv.className = 'message'; messageDiv.classList.add(isSuccess ? 'success' : 'error'); messageDiv.style.display = 'block'; setTimeout(() => { messageDiv.style.display = 'none'; }, 3000); }
+
     </script>
 </body>
 </html>
